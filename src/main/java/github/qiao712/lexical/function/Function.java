@@ -1,4 +1,4 @@
-package github.qiao712.lex.function;
+package github.qiao712.lexical.function;
 
 /**
  * 用作状态转移函数的函数接口

@@ -1,4 +1,4 @@
-package github.qiao712.lex.function;
+package github.qiao712.lexical.function;
 
 public class IsLetter implements Function{
 

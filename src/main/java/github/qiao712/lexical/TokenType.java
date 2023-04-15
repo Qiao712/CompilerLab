@@ -1,4 +1,4 @@
-package github.qiao712.lex;
+package github.qiao712.lexical;
 
 public enum TokenType {
     IDENTIFIER("标识符"),
@@ -15,5 +15,9 @@ public enum TokenType {
 
     TokenType(String name) {
         this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 }
