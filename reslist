@@ -30,3 +30,9 @@ unsigned
 void
 volatile
 while
+
+include
+define
+undef
+ifdef
+ifndef

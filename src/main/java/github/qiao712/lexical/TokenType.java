@@ -9,7 +9,9 @@ public enum TokenType {
     OPERATOR3("关系运算符"),
     OPERATOR4("赋值运算符"),
     SPLIT("分割符"),
-    UNKWON("未知的");  //不合法
+    STRING("字符串"),
+    CHAR("字符"),
+    UNKWON("非法字符");  //不合法
 
     private final String name;
 

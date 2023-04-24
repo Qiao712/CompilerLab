@@ -49,13 +49,13 @@ public class StateMachine {
         start.addTransition('-', minus);
         minus.addTransition('-', minusMinus);
         // | 和 ||
-        State or = new State(TokenType.OPERATOR1);
-        State orOr = new State(TokenType.OPERATOR1);
+        State or = new State(TokenType.OPERATOR2);
+        State orOr = new State(TokenType.OPERATOR2);
         start.addTransition('|', or);
         or.addTransition('|', orOr);
         // & 和 &&
-        State and = new State(TokenType.OPERATOR1);
-        State andAnd = new State(TokenType.OPERATOR1);
+        State and = new State(TokenType.OPERATOR2);
+        State andAnd = new State(TokenType.OPERATOR2);
         start.addTransition('&', and);
         and.addTransition('&', andAnd);
         // 乘、除、取模、按位取反、按位异或
@@ -80,8 +80,16 @@ public class StateMachine {
         State greatEqual = new State(TokenType.OPERATOR3);
         start.addTransition('>', great);
         great.addTransition('=', greatEqual);
-        //分隔符 )(,;:?{}
-        start.addTransition("(),;:?{}".toCharArray(), new State(TokenType.SPLIT)); //;,
+        //识别字符串
+        State str = new State("str");
+        State escapeChar = new State("esc");
+        start.addTransition('\"', str);               //“ 进入字符串
+        str.addTransition(c-> c!=0 && c!= '\\' && c!='\"', str);    //不断匹配字符串中的字符
+        str.addTransition('\\', escapeChar);         //匹配字符串中的转移字符 \x
+        escapeChar.addTransition(c->c!=0, str);         //匹配字符串中的转移字符 \x
+        str.addTransition('\"', new State(TokenType.STRING));          //" 退出字符串
+        //分隔符 )(,;:?{}#
+        start.addTransition("(),;:?{}[]#".toCharArray(), new State(TokenType.SPLIT)); //;,
         //匹配失败
         start.setDefaultTransition(new State(TokenType.UNKWON));
     }
@@ -100,9 +108,7 @@ public class StateMachine {
 
             //是终结符，且无法继续推进，则记录
             if(state.isTerminal() && nextState == null){
-                Token token = new Token();
-                token.type = state.getType();
-                token.value = value.toString().trim();
+                Token token = new Token(state.getType(), value.toString().trim());
                 tokens.add(token);
 
                 //区别出保留字
@@ -118,6 +124,11 @@ public class StateMachine {
                 state = nextState;
                 i++;
             }
+        }
+
+        //如果没有到达终态，则非法
+        if(!start.isTerminal() && !value.toString().trim().isEmpty()){
+            tokens.add(new Token(TokenType.UNKWON, value.toString().trim()));
         }
 
         return tokens;
